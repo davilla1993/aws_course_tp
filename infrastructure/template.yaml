@@ -32,13 +32,20 @@ Resources:
       Policies:
         - PolicyName: !Sub "${Environment}-LambdaS3AccessPolicy"
           PolicyDocument:
-            Version: "2012-10-17"
+            Version: '2012-10-17'
             Statement:
-              - Effect: Allow          # ✅ Deny → Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
+              - Effect: Allow
+                Action: [s3:GetObject]
                 Resource: !Sub 'arn:aws:s3:::${Environment}-${BucketName}/*'
+                # Resource: !GetAtt S3Bucket.Arn
+
+                # Ecrire dand la base de données
+              - Effect: Allow
+                Action: [
+                    dynamodb:PutItem,
+                    dynamodb:GetItem
+                ]
+                Resource: 'arn:aws:dynamodb:::table/s3-trigger-db'
 
   LambdaTrigger:
     Type: AWS::Lambda::Function
